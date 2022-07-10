@@ -11,6 +11,7 @@ import torchvision
 import scipy
 import scipy.ndimage
 import torchvision.transforms as transforms
+import imghdr
 
 google_drive_paths = {
     "models/stylegan2-ffhq-config-f.pt": "https://drive.google.com/uc?id=1Yr7KuD959btpmcKGAUsbAk5rPjX2MytK",
@@ -121,7 +122,10 @@ def get_landmark(filepath, predictor):
     lm = np.array(a)
     return lm
 
-
+def convert_to_jpeg(filepath) :
+        im = Image.open(filepath)
+        return im.convert('RGB')
+        
 def align_face(filepath, output_size=1024, transform_size=4096, enable_padding=True):
 
     """
@@ -190,7 +194,7 @@ def align_face(filepath, output_size=1024, transform_size=4096, enable_padding=T
            int(np.ceil(max(quad[:, 1]))))
     pad = (max(-pad[0] + border, 0), max(-pad[1] + border, 0), max(pad[2] - img.size[0] + border, 0),
            max(pad[3] - img.size[1] + border, 0))
-    if enable_padding and max(pad) > border - 4:
+    if enable_padding and max(pad) > border - 5:
         pad = np.maximum(pad, int(np.rint(qsize * 0.3)))
         img = np.pad(np.float32(img), ((pad[1], pad[3]), (pad[0], pad[2]), (0, 0)), 'reflect')
         h, w, _ = img.shape
